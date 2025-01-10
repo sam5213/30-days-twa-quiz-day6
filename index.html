@@ -24,6 +24,8 @@
     <button id="submit-results" style="display: none;">Отправить результаты</button>
 
     <script>
+        let tg = window.Telegram.WebApp;
+        
         const urlParams = new URLSearchParams(window.location.search);
         const level = urlParams.get('level');
 
@@ -79,7 +81,7 @@
                 return `Вопрос ${index + 1}: Вы выбрали "${answer.selected}", правильный ответ: "${answer.correct}"`;
             }).join('\n');
 
-            Telegram.WebApp.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
+            tg.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
         }
 
         document.getElementById('submit-results').onclick = sendResults; // Привязываем функцию к кнопке
