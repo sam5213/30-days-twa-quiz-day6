@@ -21,6 +21,7 @@
 <body>
     <h1>Выберите уровень сложности</h1>
     <div id="quiz-container"></div>
+    <button id="submit-results" style="display: none;">Отправить результаты</button>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -41,9 +42,17 @@
             ]
         };
 
+        const userAnswers = []; // Массив для хранения ответов пользователя
+
         function startQuiz() {
             const quizContainer = document.getElementById('quiz-container');
             const selectedQuestions = questions[level];
+
+            // Проверка на существование уровня
+            if (!selectedQuestions) {
+                quizContainer.innerHTML = '<h2>Уровень сложности не найден!</h2>';
+                return;
+            }
 
             selectedQuestions.forEach((q, index) => {
                 const questionElement = document.createElement('div');
@@ -51,17 +60,29 @@
                 q.options.forEach(option => {
                     const button = document.createElement('button');
                     button.innerText = option;
-                    button.onclick = () => sendAnswer(option, q.answer);
+                    button.onclick = () => selectAnswer(option, q.answer);
                     questionElement.appendChild(button);
                 });
                 quizContainer.appendChild(questionElement);
             });
+
+            // Показать кнопку отправки результатов
+            document.getElementById('submit-results').style.display = 'block';
         }
 
-        function sendAnswer(selected, correct) {
-            const result = selected === correct ? 'Правильно!' : 'Неправильно!';
-            Telegram.WebApp.sendData(JSON.stringify({ answer: result })); // Отправляем результат в бот
+        function selectAnswer(selected, correct) {
+            userAnswers.push({ selected, correct }); // Сохраняем ответ пользователя
         }
+
+        function sendResults() {
+            const results = userAnswers.map((answer, index) => {
+                return `Вопрос ${index + 1}: Вы выбрали "${answer.selected}", правильный ответ: "${answer.correct}"`;
+            }).join('\n');
+
+            Telegram.WebApp.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
+        }
+
+        document.getElementById('submit-results').onclick = sendResults; // Привязываем функцию к кнопке
 
         window.onload = startQuiz; // Запускаем квиз при загрузке страницы
     </script>
