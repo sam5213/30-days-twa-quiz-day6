@@ -78,10 +78,9 @@
 
         function sendResults() {
             const results = userAnswers.map((answer, index) => {
+                tg.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
                 return `Вопрос ${index + 1}: Вы выбрали "${answer.selected}", правильный ответ: "${answer.correct}"`;
             }).join('\n');
-
-            tg.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
         }
 
         document.getElementById('submit-results').onclick = sendResults; // Привязываем функцию к кнопке
