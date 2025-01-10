@@ -24,8 +24,6 @@
     <button id="submit-results" style="display: none;">Отправить результаты</button>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        
         const urlParams = new URLSearchParams(window.location.search);
         const level = urlParams.get('level');
 
@@ -78,14 +76,19 @@
 
         function sendResults() {
             const results = userAnswers.map((answer, index) => {
-                tg.sendData(JSON.stringify({ results })); // Отправляем результаты в бот
                 return `Вопрос ${index + 1}: Вы выбрали "${answer.selected}", правильный ответ: "${answer.correct}"`;
             }).join('\n');
+        
+            // Форматируем данные в JSON
+            const dataToSend = JSON.stringify({ results });
+        
+            // Отправляем данные в бот
+            Telegram.WebApp.sendData(dataToSend);
         }
 
         document.getElementById('submit-results').onclick = sendResults; // Привязываем функцию к кнопке
 
-        window.onload = startQuiz; // Запускаем квиз при загрузке страницы
+        window.onload = startQuiz(); // Запускаем квиз при загрузке страницы
     </script>
 </body>
 </html>
